@@ -34,7 +34,7 @@ public class Server
 	 * > java Server portNumber
 	 * If the port number is not specified 4501 is used
 	 * @param args
-	 */
+	 *//*
 	public static void main(String[] args)
 	{
 		// start server on port 1500 unless a PortNumber is specified
@@ -62,7 +62,7 @@ public class Server
 		// create a server object and start it
 		Server server = new Server(portNumber);
 		server.start();
-	}
+	}*/
 	
 	public void start()
 	{
