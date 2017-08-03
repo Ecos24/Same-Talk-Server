@@ -1,41 +1,37 @@
 package serverGUI;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import helper.Util;
 import serverMainClasses.Server;
 
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
+import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.io.IOException;
+import java.awt.event.ActionEvent;
 
 public class ServerLoggedIn
 {
+	private Server server;
+	
 	
 	private static final int framex = 100;
 	private static final int framey = 100;
 	private static final int frameLength = 700;
 	private static final int frameheigth = 500;
 	private final Color bgColor = new Color(238, 238, 238);
-	private final Color failedStatusbg = new Color(255,0,0);
-	private final String failedStatus = "Server is not running";
-	@SuppressWarnings("unused")
-	private final Color readyStatusbg = new Color(0,255,0);
-	@SuppressWarnings("unused")
-	private final String readyStatus = "Server is running normally";
-	@SuppressWarnings("unused")
-	private final Color errorStatusbg = new Color(255,128,0);
-	@SuppressWarnings("unused")
-	private final String errorStatus = "Server encountered some problem.";
 	
 	public JFrame serverLoggedInframe;
 	private JTextPane serverStatusTextPane;
@@ -47,48 +43,47 @@ public class ServerLoggedIn
 	private JTable connectedClientsTable;
 	private DefaultTableModel connectedClientsTableModel;
 	private JScrollPane connectedClientsScrollPane;
-	private JTextArea serverDetails;
-	
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					ServerLoggedIn window = new ServerLoggedIn();
-					window.serverLoggedInframe.setVisible(true);
-				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JTextField serverDetails;
 	
 	/**
 	 * Create the application.
 	 */
 	public ServerLoggedIn()
+	{		
+		// Initialize GUI components.
+		initComponents();
+	}
+	
+	public void startServer(int portNumber) throws IOException
+	{
+		server = new Server(portNumber,eventDisplay,connectedClientsTableModel,serverDetails, serverStatusText);
+		server.initServer();
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					server.start();
+				}
+				catch(IOException e)
+				{
+					Server.getUtil().updateServerStatus(Util.STATUS_FAILED);
+					JOptionPane.showMessageDialog(null, "Server cannot be started!!\n" +
+								e.getClass().getName() + " --> " + e.getMessage());
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+		}).start();
+	}
+	
+	public void displayFrame()
 	{
 		initializeFrame();
-		initComponents();
 		initListeners();
 		associateFrameComponents();
-	}
-	public ServerLoggedIn(int portNumber)
-	{		
-		// Initialize & Start GUI.
-		initializeFrame();
-		initComponents();
-		initListeners();
-		associateFrameComponents();
-
-		// Start the Server.
-		Server server = new Server(portNumber);
-		server.start();
 	}
 	
 	private void associateFrameComponents()
@@ -104,7 +99,38 @@ public class ServerLoggedIn
 	
 	private void initListeners()
 	{
+		// Shutdown Listener.
+		shutDownServerBtn.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if( server != null )
+				{
+					Server.getUtil().updateServerStatus(Util.STATUS_FAILED);
+					server.destroy();
+					serverLoggedInframe.dispose();
+					System.exit(1);
+				}
+			}
+		});
 		
+		eventDisplayScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
+		{	
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e)
+			{
+				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
+		
+		connectedClientsScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener()
+		{	
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e)
+			{
+				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
 	}
 	
 	private void initComponents()
@@ -120,10 +146,10 @@ public class ServerLoggedIn
 		serverStatusText.setEditable(false);
 		serverStatusText.setFocusable(false);
 		serverStatusText.setHorizontalAlignment(JTextField.CENTER);
-		serverStatusText.setBounds(140, 10, 330, 30);
+		serverStatusText.setBounds(140, 10, 370, 30);
 		serverStatusText.setFont(new Font("Dialog", Font.BOLD, 16));
-		serverStatusText.setText(failedStatus);
-		serverStatusText.setBackground(failedStatusbg);
+		serverStatusText.setText("Server is not running");
+		serverStatusText.setBackground(new Color(255,0,0));
 		
 		
 		shutDownServerBtn = new JButton("ShutDown Server");
@@ -136,10 +162,10 @@ public class ServerLoggedIn
 		eventDisplayScrollPane = new JScrollPane(eventDisplay);
 		eventDisplayScrollPane.setBounds(10, 80, 370, 410);
 		
-		serverDetails = new JTextArea();
+		serverDetails = new JTextField();
 		serverDetails.setFocusable(false);
 		serverDetails.setEditable(false);
-		serverDetails.setBounds(400, 80, 288, 20);
+		serverDetails.setBounds(392, 80, 296, 20);
 		
 		regUser = new JButton("Register a New User");
 		regUser.setBounds(440, 120, 200, 30);
@@ -173,18 +199,8 @@ public class ServerLoggedIn
 		serverLoggedInframe.setBounds(framex, framey, frameLength, frameheigth);
 		serverLoggedInframe.setBackground(bgColor);
 		serverLoggedInframe.getContentPane().setLayout(null);
-		serverLoggedInframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		serverLoggedInframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		serverLoggedInframe.setVisible(true);
 		serverLoggedInframe.setResizable(false);
-		
-		serverLoggedInframe.addWindowListener( new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent arg0)
-			{
-				new ServerLogIn();
-				super.windowClosing(arg0);
-			}
-		});
 	}
 }

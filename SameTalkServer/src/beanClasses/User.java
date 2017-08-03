@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table (name="REGISTERED_USERS")
@@ -18,11 +19,33 @@ public class User implements Serializable
 	
 	@Id
 	private String userId;
+	@Column(nullable = false)
 	private String password;
-	@Column( name = "Token")
+	@Column(nullable = false)
+	private String department;
+	@Column(nullable = false)
+	private String position;
+	@Transient
 	private String uniqueToken;
 	
 	
+	
+	public String getDepartment()
+	{
+		return department;
+	}
+	public void setDepartment(String department)
+	{
+		this.department = department;
+	}
+	public String getPosition()
+	{
+		return position;
+	}
+	public void setPosition(String position)
+	{
+		this.position = position;
+	}
 	public String getUniqueToken()
 	{
 		return uniqueToken;

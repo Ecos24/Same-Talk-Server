@@ -8,8 +8,18 @@ import hibernate.CreateDBConnection;
 
 public class AuthenticateUser
 {
-	public static boolean authenticate(User user)
+	public static void initHibernate(Util util)
 	{
+		util.updateServerStatus(Util.STATUS_BUSY);
+		SessionFactory sessionFactory = CreateDBConnection.getSessionFac();
+		Session session = sessionFactory.openSession();
+		session.close();
+		util.updateServerStatus(Util.STATUS_READY);
+	}
+	
+	public static boolean authenticate(User user, Util util)
+	{
+		util.updateServerStatus(Util.STATUS_BUSY);
 		SessionFactory sessionFactory = CreateDBConnection.getSessionFac();
 		
 		Session session = sessionFactory.openSession();
@@ -20,9 +30,13 @@ public class AuthenticateUser
 		{
 			if( user.getPassword().equals(authUser.getPassword()) )
 			{
+				session.close();
+				util.updateServerStatus(Util.STATUS_READY);
 				return true;
 			}
 		}
+		session.close();
+		util.updateServerStatus(Util.STATUS_READY);
 		return false;
 	}
 }

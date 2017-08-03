@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -136,9 +137,9 @@ public class ServerLogIn
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if( !password.getPassword().toString().equals("") )
+				if( !String.valueOf(password.getPassword()).equals("") )
 				{
-					if( password.getPassword().toString().equals(ReadFromPropertiesFile.getProp("pass")) )
+					if( String.valueOf(password.getPassword()).equals(ReadFromPropertiesFile.getProp("pass")) )
 					{
 						// start server on port 1500 unless a PortNumber is specified
 						int portNumber = 4501;
@@ -153,7 +154,18 @@ public class ServerLogIn
 							return;
 						}
 						// create a server object and start it
-						ServerLoggedIn server = new ServerLoggedIn(portNumber);
+						ServerLoggedIn server = new ServerLoggedIn();
+						try
+						{
+							server.startServer(portNumber);
+						}
+						catch(IOException e)
+						{
+							JOptionPane.showMessageDialog(serverLogInframe, "Server cannot be Started!!\n" +
+										e.getClass().getName() + " --> " + e.getMessage() + "\n");
+							return;
+						}
+						server.displayFrame();
 						server.serverLoggedInframe.setVisible(true);
 						serverLogInframe.dispose();
 					}
