@@ -17,13 +17,12 @@ public class AuthenticateUser
 		util.updateServerStatus(Util.STATUS_READY);
 	}
 	
-	public static boolean authenticate(User user, Util util)
+	public static User authenticate(User user, Util util)
 	{
 		util.updateServerStatus(Util.STATUS_BUSY);
 		SessionFactory sessionFactory = CreateDBConnection.getSessionFac();
 		
 		Session session = sessionFactory.openSession();
-		System.out.println(user.getUserId().toLowerCase());
 		User authUser = (User)session.get(User.class, user.getUserId().toLowerCase());
 		
 		if( authUser != null )
@@ -32,11 +31,11 @@ public class AuthenticateUser
 			{
 				session.close();
 				util.updateServerStatus(Util.STATUS_READY);
-				return true;
+				return authUser;
 			}
 		}
 		session.close();
 		util.updateServerStatus(Util.STATUS_READY);
-		return false;
+		return null;
 	}
 }

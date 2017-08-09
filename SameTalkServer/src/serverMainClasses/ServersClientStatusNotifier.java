@@ -2,11 +2,12 @@ package serverMainClasses;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import beanClasses.ClientStatus;
+import helper.UtilClient;
 
 /**
  * Class functions that provide functionalities to notify client about all other Client's Status.
@@ -15,7 +16,9 @@ import beanClasses.ClientStatus;
 public class ServersClientStatusNotifier
 {	
 	private ObjectOutputStream clientOutputStream;
-	private ArrayList<ClientStatus> currentClientStatusList;
+	private LinkedHashMap<String, LinkedHashMap<String,ArrayList<ClientStatus>>> currentClientStatusList;
+	private String userId;
+	private UtilClient utilClient;
 	
 	/**
 	 * Constructor to initiate outputStream & currentClientStatusList
@@ -24,29 +27,27 @@ public class ServersClientStatusNotifier
 	 * @param currentClientStatusList
 	 * @throws IOException 
 	 */
-	public ServersClientStatusNotifier(Socket clientSocket, ObjectOutputStream clientOutputStream,
-			ArrayList<ClientStatus> currentClientStatusList) throws IOException
+	public ServersClientStatusNotifier(ObjectOutputStream clientOutputStream, 
+			LinkedHashMap<String, LinkedHashMap<String,ArrayList<ClientStatus>>> currentClientStatusList,
+			String clientId, UtilClient utilClient)
 	{
 		super();
-		this.clientOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+		// This line creating problem But Why??????????????????????????????????????
+		this.clientOutputStream = clientOutputStream;
 		this.currentClientStatusList = currentClientStatusList;
+		this.userId = clientId;
+		this.utilClient = utilClient;
 		
 		// Write currentClientStatus List to user When requested.
-		while(true)
+		try
 		{
-			try
-			{
-				System.out.println("Writing currentClientStatus List to Stream for first time!! by "+this.getClass().getName());
-				clientOutputStream.writeObject(currentClientStatusList);
-				clientOutputStream.flush();
-				break;
-			}
-			catch(IOException e)
-			{
-				System.out.println(this.getClass().getName()+" Exception --> "+e.getClass().getName()+" - "+e.getMessage());
-				e.printStackTrace();
-				continue;
-			}
+			clientOutputStream.writeObject(currentClientStatusList);
+			clientOutputStream.flush();
+		}
+		catch(IOException e)
+		{
+			System.out.println(this.getClass().getName()+" Exception --> "+e.getClass().getName()+" - "+e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -59,8 +60,9 @@ public class ServersClientStatusNotifier
 		{
 			try
 			{
-				System.out.println("Writing new Client Status List!");
-				clientOutputStream.writeObject(currentClientStatusList);
+				System.out.println("Writing updated client status list to --> "+userId);
+				this.currentClientStatusList = utilClient.copyLinkedHashMap(Server.clientStatusList);
+				clientOutputStream.writeObject(this.currentClientStatusList);
 				clientOutputStream.flush();
 			}
 			catch(IOException e)
@@ -72,28 +74,36 @@ public class ServersClientStatusNotifier
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private boolean clientsStatusChange()
 	{
-		if( (Server.clientStatusList != null && currentClientStatusList != null) && 
-				( Server.clientStatusList.size() > 0 && currentClientStatusList.size() > 0) )
-		{
-			Iterator currentListIterator = currentClientStatusList.iterator();
-			Iterator clientStatusListIterator = Server.clientStatusList.iterator();
-			while( currentListIterator.hasNext() && clientStatusListIterator.hasNext() )
+		if( (Server.clientStatusList != null && this.currentClientStatusList != null) && 
+				( Server.clientStatusList.size() > 0 && this.currentClientStatusList.size() > 0) )
+		{			
+			Iterator<LinkedHashMap<String, ArrayList<ClientStatus>>> itcsl = 
+					this.currentClientStatusList.values().iterator();
+			Iterator<LinkedHashMap<String, ArrayList<ClientStatus>>> itcslMain = 
+					Server.clientStatusList.values().iterator();
+			while(itcsl.hasNext() && itcslMain.hasNext())
 			{
-				ClientStatus currentClientStatus = (ClientStatus) currentListIterator.next();
-				ClientStatus clientStatus = (ClientStatus) clientStatusListIterator.next();
-				if( currentClientStatus.getClientStatus().equals(clientStatus.getClientStatus()))
+				Iterator<ArrayList<ClientStatus>> tl = itcsl.next().values().iterator();
+				Iterator<ArrayList<ClientStatus>> tlMain = itcslMain.next().values().iterator();
+				while( tl.hasNext() && tlMain.hasNext() )
 				{
-					System.out.println(this.getClass().getName()+" returning false in clientsStatusChange. ");
-					return false;
+					Iterator<ClientStatus> te = tl.next().iterator();
+					Iterator<ClientStatus> teMain = tlMain.next().iterator();
+					while( te.hasNext() && teMain.hasNext() )
+					{
+						ClientStatus cs = te.next();
+						ClientStatus csMain = teMain.next();
+						if( !cs.getClientStatus().equals(csMain.getClientStatus()) )
+						{
+							return true;
+						}
+					}
 				}
 			}
-			System.out.println(this.getClass().getName()+" returning true in clientsStatusChange. ");
-			return true;
+			return false;
 		}
-		System.out.println(this.getClass().getName()+" returning false in clientsStatusChange. ");
 		return false;
 	}
 }

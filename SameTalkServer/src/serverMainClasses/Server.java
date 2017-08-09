@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -14,6 +15,7 @@ import beanClasses.ClientStatus;
 import helper.AuthenticateUser;
 import helper.ChatMessage;
 import helper.Util;
+import helper.UtilClient;
 import hibernate.DBUtil;
 
 public class Server
@@ -26,7 +28,7 @@ public class Server
 	// an ArrayList to keep the list of the Client
 	static ArrayList<ServersClientThread> clientsList;
 	// ArrayList to hold all client Status.
-	static ArrayList<ClientStatus> clientStatusList;
+	public static LinkedHashMap<String, LinkedHashMap<String, ArrayList<ClientStatus>>> clientStatusList;
 	// the port number to listen for connection
 	private int port;
 	// the boolean that will be turned of to stop the server
@@ -38,6 +40,8 @@ public class Server
 		return util;
 	}
 
+	private UtilClient utilClient;
+
 	public Server(int port, JTextArea displayEvent, DefaultTableModel connectedClientTableModel,
 			JTextField serverDetails, JTextField serverStatusText)
 	{
@@ -47,6 +51,7 @@ public class Server
 		clientsList = new ArrayList<ServersClientThread>();
 		// Pass GUI elements references to Util class.
 		util = new Util(displayEvent, connectedClientTableModel, serverDetails, serverStatusText);
+		utilClient = new UtilClient();
 	}
 	
 	/**
@@ -89,7 +94,7 @@ public class Server
 			if(!keepGoing)
 				break;
 			// make a thread of it
-			ServersClientThread clientThread = new ServersClientThread(socket, ++uniqueId, util);
+			ServersClientThread clientThread = new ServersClientThread(socket, ++uniqueId, util, utilClient);
 			if(clientThread.confirmUser())
 			{
 				clientsList.add(clientThread); // save it in the ArrayList

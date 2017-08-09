@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class ClientStatus implements Serializable
 {
 	/**
-	 * 
+	 * Serializable Key.
 	 */
 	private static final long serialVersionUID = -3020750501590947316L;
 	
@@ -15,7 +15,26 @@ public class ClientStatus implements Serializable
 	
 	private String clientId;
 	private String clientStatus;
+	private String department;
+	private String position;
 	
+	
+	public String getDepartment()
+	{
+		return department;
+	}
+	public void setDepartment(String department)
+	{
+		this.department = department;
+	}
+	public String getPosition()
+	{
+		return position;
+	}
+	public void setPosition(String position)
+	{
+		this.position = position;
+	}
 	public String getClientId()
 	{
 		return clientId;

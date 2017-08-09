@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import beanClasses.ClientStatus;
 import beanClasses.User;
 import helper.AuthenticateUser;
 import helper.ChatMessage;
 import helper.Util;
+import helper.UtilClient;
 
 public class ServersClientThread extends Thread
 {
@@ -31,6 +35,7 @@ public class ServersClientThread extends Thread
 	String date;
 	// Reference for UtilObject.
 	Util util;
+	UtilClient utilClient;
 	
 	public int getClientId()
 	{
@@ -49,12 +54,13 @@ public class ServersClientThread extends Thread
 		this.client = user;
 	}
 
-	public ServersClientThread(Socket clientSocket, int id, Util util)
+	public ServersClientThread(Socket clientSocket, int id, Util util, UtilClient utilClient)
 	{
 		super();
 		this.clientSocket = clientSocket;
 		this.clientId = id;
 		this.util = util;
+		this.utilClient =  utilClient;
 		
 		// Creating both Data Stream
 		try
@@ -65,8 +71,9 @@ public class ServersClientThread extends Thread
 			clientOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			
 			// Read the UserName
-			System.out.println("Reading User");
+			System.out.print("Reading User");
 			this.client = (User) clientInputStream.readObject();
+			System.out.println(" --> "+ this.client.getUserId());
 		}
 		catch(IOException | ClassNotFoundException e)
 		{
@@ -84,12 +91,16 @@ public class ServersClientThread extends Thread
 	{
 		try
 		{
-			if( AuthenticateUser.authenticate(this.client, this.util) )
+			User authenticatedUser = AuthenticateUser.authenticate(this.client, this.util); 
+			if( authenticatedUser != null )
 			{
+				String token = this.client.getUniqueToken();
+				this.client = authenticatedUser;
+				this.client.setUniqueToken(token);
 				clientOutputStream.writeObject(this.client);
 				clientOutputStream.flush();
 				
-				updateClientStatus(client.getUserId());
+				utilClient.updateClientStatus(this.client, true);
 				
 				util.displayEvent(client.getUserId() + " just Connected");
 				util.updateConnectedClientsTable(client.getUserId());
@@ -113,19 +124,6 @@ public class ServersClientThread extends Thread
 		}
 	}
 	
-	private void updateClientStatus(String userId)
-	{
-		for(ClientStatus clientStatus : Server.clientStatusList)
-		{
-			if( clientStatus.getClientId().equals(userId) )
-			{
-				ClientStatus cs = Server.clientStatusList.get(Server.clientStatusList.indexOf(clientStatus));
-				cs.setClientStatus(ClientStatus.ONLINE);
-				Server.clientStatusList.set(Server.clientStatusList.indexOf(clientStatus), cs);
-			}
-		}
-	}
-	
 	// What will run Forever.
 	@Override
 	public void run()
@@ -133,39 +131,46 @@ public class ServersClientThread extends Thread
 		super.run();
 		
 		// Start ListenerResponser for this client.
-		ArrayList<ClientStatus> currentClientStatusList = null;
+		LinkedHashMap<String, LinkedHashMap<String, ArrayList<ClientStatus>>> currentClientStatusList = null;
 		if( Server.clientStatusList != null )
 		{
-			currentClientStatusList = new ArrayList<>();
-			currentClientStatusList.addAll(Server.clientStatusList);
-			for(ClientStatus clientStatus : currentClientStatusList)
+			currentClientStatusList = utilClient.copyLinkedHashMap(Server.clientStatusList);
+			// Test The copy Function --> 
+			System.out.println("Testing Copy Function --> ");
+			Iterator<LinkedHashMap<String, ArrayList<ClientStatus>>> itcsl = 
+					currentClientStatusList.values().iterator();
+			while(itcsl.hasNext())
 			{
-				System.out.println(clientStatus.getClientId() + " --> " + clientStatus.getClientStatus());
+				Iterator<ArrayList<ClientStatus>> tl = itcsl.next().values().iterator();
+				while( tl.hasNext() )
+				{
+					Iterator<ClientStatus> te = tl.next().iterator();
+					while( te.hasNext() )
+					{
+						ClientStatus cs = te.next();
+						System.out.println(cs.getClientId()+" "+cs.getClientStatus());
+					}
+				}
 			}
 		}
 		// Initialize object for Status Notifier.
-		ServersClientStatusNotifier serverNotifier = null;
-		try
-		{
-			serverNotifier = new ServersClientStatusNotifier(clientSocket, clientOutputStream, currentClientStatusList);
-		}
-		catch(IOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		ThreadServersClientStatusNotifier thNotifier = new ThreadServersClientStatusNotifier(clientOutputStream,
+				this.client, currentClientStatusList, utilClient);
+		thNotifier.start();
+		
 		
 		// To loop until LogOut.
 		Object obj;
 		while(keepGoing)
 		{
+			obj = null;
 			try
 			{
 				if( !clientSocket.isConnected() )
 				{
 					break;
 				}
-				obj = clientInputStream.readObject();
+				obj = (Object)clientInputStream.readObject();
 				if( obj instanceof ChatMessage )
 				{
 					chatMessage = (ChatMessage) obj;
@@ -177,6 +182,13 @@ public class ServersClientThread extends Thread
 			catch( ClassNotFoundException e )
 			{
 				continue;
+			}
+			catch( SocketException e )
+			{
+				System.out.println("Exception "+e.getClass().getName()+
+						": ("+new Date()+")while reading object in Clinet Thread!! --> "+e.getMessage());
+				util.displayEvent("Closing this Client, due to connection reset while reading data from client.");
+				break;
 			}
 			catch( IOException e)
 			{
@@ -190,12 +202,10 @@ public class ServersClientThread extends Thread
 				e.printStackTrace();
 				break;
 			}
-			
-			// Notify Client about Status of others.
-			if( serverNotifier != null )
-				serverNotifier.notifyClientAboutStatus();
 		}
 		// Remove myself from the arrayList containing the list of the connected Clients.
+		thNotifier.setKeepGoing(false);
+		utilClient.updateClientStatus(this.client, false);
 		Server.remove(clientId);
 		close();
 	}

@@ -1,6 +1,7 @@
 package hibernate;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -13,7 +14,7 @@ import beanClasses.User;
 public class DBUtil
 {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static ArrayList<ClientStatus> getAllRegisteredClients()
+	public static LinkedHashMap<String, LinkedHashMap<String, ArrayList<ClientStatus>>> getAllRegisteredClients()
 	{
 		SessionFactory sessionFactory = CreateDBConnection.getSessionFac();
 		Session session = sessionFactory.openSession();
@@ -23,15 +24,44 @@ public class DBUtil
 		
 		if( userAll != null && userAll.size() > 0 )
 		{
-			ArrayList<ClientStatus> clientStatusAll = new ArrayList<>();
+			LinkedHashMap<String, LinkedHashMap<String, ArrayList<ClientStatus>>> clientStatusMap = 
+					new LinkedHashMap<>();
+			
 			for(User user : userAll)
 			{
 				ClientStatus cs = new ClientStatus();
 				cs.setClientId(user.getUserId());
+				cs.setDepartment(user.getDepartment());
+				cs.setPosition(user.getPosition());
 				cs.setClientStatus(ClientStatus.OFFLINE);
-				clientStatusAll.add(cs);
+				
+				if( !clientStatusMap.containsKey(cs.getDepartment()) )
+				{
+					ArrayList<ClientStatus> arcs = new ArrayList<>();
+					arcs.add(cs);
+					LinkedHashMap<String, ArrayList<ClientStatus>> lkhm = new LinkedHashMap<>();
+					lkhm.put(cs.getPosition(), arcs);
+					clientStatusMap.put(cs.getDepartment(), lkhm);
+				}
+				else
+				{
+					LinkedHashMap<String, ArrayList<ClientStatus>> lhm = 
+							clientStatusMap.get(cs.getDepartment());
+					if( !lhm.containsKey(cs.getPosition()) )
+					{
+						ArrayList<ClientStatus> arcs = new ArrayList<>();
+						arcs.add(cs);
+						lhm.put(cs.getPosition(), arcs);
+					}
+					else
+					{
+						ArrayList<ClientStatus> ar = lhm.get(cs.getPosition());
+						ar.add(cs);
+					}
+				}
 			}
-			return clientStatusAll;
+			session.close();
+			return clientStatusMap;
 		}
 		else
 		{
