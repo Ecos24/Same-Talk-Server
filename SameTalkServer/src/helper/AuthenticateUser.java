@@ -27,6 +27,8 @@ public class AuthenticateUser
 		
 		if( authUser != null )
 		{
+			authUser.setDepartment(authUser.getDepartment().toLowerCase());
+			authUser.setPosition(authUser.getPosition().toLowerCase());
 			if( user.getPassword().equals(authUser.getPassword()) )
 			{
 				session.close();

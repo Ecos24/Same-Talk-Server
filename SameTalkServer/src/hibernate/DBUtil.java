@@ -31,8 +31,8 @@ public class DBUtil
 			{
 				ClientStatus cs = new ClientStatus();
 				cs.setClientId(user.getUserId());
-				cs.setDepartment(user.getDepartment());
-				cs.setPosition(user.getPosition());
+				cs.setDepartment(user.getDepartment().toLowerCase());
+				cs.setPosition(user.getPosition().toLowerCase());
 				cs.setClientStatus(ClientStatus.OFFLINE);
 				
 				if( !clientStatusMap.containsKey(cs.getDepartment()) )

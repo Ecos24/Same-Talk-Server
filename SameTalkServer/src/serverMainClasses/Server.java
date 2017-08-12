@@ -118,6 +118,84 @@ public class Server
 	}
 	
 	/**
+	 * To group message to Clients
+	 * @param message
+	 */
+	public static synchronized void personalMsg(String message, ChatMessage chat, String sender, int id)
+	{
+		// Displaying busy Server Status.
+		util.updateServerStatus(Util.STATUS_BUSY);
+		
+		// add HH:mm:ss and \n to the message
+		String receivedTime = Util.sdf.format(new Date());
+		String messageLf = receivedTime + "   " + message + "\n";
+		// display message
+		util.displayChat(messageLf);
+		
+		// Counter for sending to both.
+		int count = 0;
+		
+		// we loop in reverse order in case we would have to remove a Client because it has disconnected.
+		for(int i = clientsList.size(); --i >= 0;)
+		{
+			ServersClientThread ct = clientsList.get(i);
+			// try to write to the Client if it fails remove it from the list
+			if( chat.getMsgTarget().toLowerCase().equals(ct.client.getUserId().toLowerCase())||
+					sender.equals(ct.client.getUserId().toLowerCase()) )
+			{
+				if(!ct.writeMsg(messageLf, chat))
+				{
+					clientsList.remove(i);
+					util.displayEvent("Disconnected Client " + ct.getClient().getUserId()+ " removed from list.");
+				}
+				count++;
+			}
+			
+			if( count == 2 )
+				break;
+		}
+
+		// Change Status back to Ideal.
+		util.updateServerStatus(Util.STATUS_READY);
+	}
+	
+	/**
+	 * To group message to Clients
+	 * @param message
+	 */
+	public static synchronized void groupMsg(String message, ChatMessage chat,String sender , int id)
+	{
+		// Displaying busy Server Status.
+		util.updateServerStatus(Util.STATUS_BUSY);
+		
+		// add HH:mm:ss and \n to the message
+		String time = Util.sdf.format(new Date());
+		String messageLf = time + "   " + message + "\n";
+		// display message
+		util.displayChat(messageLf);
+		
+		// we loop in reverse order in case we would have to remove a Client because it has disconnected.
+		for(int i = clientsList.size(); --i >= 0;)
+		{
+			ServersClientThread ct = clientsList.get(i);
+			// try to write to the Client if it fails remove it from the list
+			if( chat.getMsgTarget().toLowerCase().equals(ct.client.getDepartment()) ||
+					chat.getMsgTarget().toLowerCase().equals(ct.client.getPosition()) ||
+					sender.equals(ct.client.getUserId().toLowerCase()) )
+			{
+				if(!ct.writeMsg(messageLf, chat))
+				{
+					clientsList.remove(i);
+					util.displayEvent("Disconnected Client " + ct.getClient().getUserId()+ " removed from list.");
+				}
+			}
+		}
+
+		// Change Status back to Ideal.
+		util.updateServerStatus(Util.STATUS_READY);
+	}
+	
+	/**
 	 * To broadcast a message to all Clients
 	 * @param message
 	 */
