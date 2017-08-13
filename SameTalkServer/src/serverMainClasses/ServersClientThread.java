@@ -12,10 +12,10 @@ import java.util.LinkedHashMap;
 
 import beanClasses.ClientStatus;
 import beanClasses.User;
-import helper.AuthenticateUser;
 import helper.ChatMessage;
 import helper.Util;
 import helper.UtilClient;
+import hibernate.AuthenticateUser;
 
 public class ServersClientThread extends Thread
 {

@@ -31,6 +31,7 @@ public class DBUtil
 			{
 				ClientStatus cs = new ClientStatus();
 				cs.setClientId(user.getUserId());
+				cs.setClientName(user.getUserName());
 				cs.setDepartment(user.getDepartment().toLowerCase());
 				cs.setPosition(user.getPosition().toLowerCase());
 				cs.setClientStatus(ClientStatus.OFFLINE);

@@ -20,6 +20,8 @@ public class User implements Serializable
 	@Id
 	private String userId;
 	@Column(nullable = false)
+	private String userName;
+	@Column(nullable = false)
 	private String password;
 	@Column(nullable = false)
 	private String department;
@@ -28,8 +30,14 @@ public class User implements Serializable
 	@Transient
 	private String uniqueToken;
 	
-	
-	
+	public String getUserName()
+	{
+		return userName;
+	}
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
 	public String getDepartment()
 	{
 		return department;

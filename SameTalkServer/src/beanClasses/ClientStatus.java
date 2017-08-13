@@ -14,11 +14,19 @@ public class ClientStatus implements Serializable
 	public final static String OFFLINE = "offline";
 	
 	private String clientId;
+	private String clientName;
 	private String clientStatus;
 	private String department;
 	private String position;
 	
-	
+	public String getClientName()
+	{
+		return clientName;
+	}
+	public void setClientName(String clientName)
+	{
+		this.clientName = clientName;
+	}
 	public String getDepartment()
 	{
 		return department;

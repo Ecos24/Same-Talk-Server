@@ -153,6 +153,12 @@ public class ServerLogIn
 							JOptionPane.showMessageDialog(serverLogInframe, "Invalid port number.");
 							return;
 						}
+						
+						if( portNumber <= 1024 || portNumber >= 65536 )
+						{
+							JOptionPane.showMessageDialog(serverLogInframe, "Port number can be only in range (1025 - 65536)");
+							return;
+						}
 						// create a server object and start it
 						ServerLoggedIn server = new ServerLoggedIn();
 						try

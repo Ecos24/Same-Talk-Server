@@ -60,6 +60,7 @@ public class UtilClient
 					ClientStatus cs = new ClientStatus();
 					ClientStatus csOr = values2.next();
 					cs.setClientId(csOr.getClientId());
+					cs.setClientName(csOr.getClientName());
 					cs.setClientStatus(csOr.getClientStatus());
 					cs.setDepartment(csOr.getDepartment());
 					cs.setPosition(csOr.getPosition());
@@ -73,5 +74,73 @@ public class UtilClient
 			return null;
 		else
 			return copy;
+	}
+	
+	
+	public static String[] getDepartments()
+	{
+		String[] dept = {"Select Department", "Accounting", "Developer", "Finance", "Human Resource", "Quality Assurance"}; 
+		return dept;
+	}
+	
+	public static String[] getPositions( String dept )
+	{
+		ArrayList<String> pos = new ArrayList<>();
+		switch(dept)
+		{
+			case "Accounting":
+				pos.add("Select");
+				pos.add("Staff Accountant");
+				pos.add("Accounts Receivable Specialist");
+				pos.add("Analyst/Associate (Forensic Accounting)");
+				pos.add("Accounting Associate");
+				pos.add("Tax Manager");
+				pos.add("Internal Audit Manager");
+				break;
+				
+			case "Developer":
+				pos.add("Select");
+				pos.add("Project Manager");
+				pos.add("Team Lead");
+				pos.add("Senior Developer");
+				pos.add("Junior Developer");
+				pos.add("Designer");
+				pos.add("DB Manager");
+				break;
+				
+			case "Finance":
+				pos.add("Select");
+				pos.add("Financial Analyst");
+				pos.add("Credit Manager");
+				pos.add("Cash Management");
+				pos.add("Investor Relations");
+				break;
+				
+			case "Human Resource":
+				pos.add("Select");
+				pos.add("Manager");
+				pos.add("Talent Manager");
+				pos.add("Assistant Manager");
+				break;
+				
+			case "Quality Assurance":
+				pos.add("Select");
+				pos.add("Team Leader");
+				pos.add("Senior Testor");
+				pos.add("Junior Testor");
+				break;
+
+			default:
+				String[] defaultPos = {"Select Department First"};
+				return defaultPos;
+		}
+		if( pos.size() > 0 )
+		{
+			String[] returnPos = new String[pos.size()];
+			returnPos = pos.toArray(returnPos);
+			return returnPos;
+		}
+		else
+			return null;
 	}
 }

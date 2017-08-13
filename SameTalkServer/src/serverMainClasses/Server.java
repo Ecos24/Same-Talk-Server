@@ -12,10 +12,10 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import beanClasses.ClientStatus;
-import helper.AuthenticateUser;
 import helper.ChatMessage;
 import helper.Util;
 import helper.UtilClient;
+import hibernate.AuthenticateUser;
 import hibernate.DBUtil;
 
 public class Server

@@ -1,10 +1,10 @@
-package helper;
+package hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import beanClasses.User;
-import hibernate.CreateDBConnection;
+import helper.Util;
 
 public class AuthenticateUser
 {
@@ -33,6 +33,7 @@ public class AuthenticateUser
 			{
 				session.close();
 				util.updateServerStatus(Util.STATUS_READY);
+				System.out.println(authUser.getUserName());
 				return authUser;
 			}
 		}

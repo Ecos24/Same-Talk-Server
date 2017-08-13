@@ -26,7 +26,6 @@ public class ServerLoggedIn
 {
 	private Server server;
 	
-	
 	private static final int framex = 100;
 	private static final int framey = 100;
 	private static final int frameLength = 700;
@@ -99,6 +98,17 @@ public class ServerLoggedIn
 	
 	private void initListeners()
 	{
+		// Registering new User
+		regUser.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				RegisterUserGUI win = new RegisterUserGUI();
+				win.regFrame.setVisible(true);
+			}
+		});
+		
 		// Shutdown Listener.
 		shutDownServerBtn.addActionListener(new ActionListener()
 		{
@@ -200,7 +210,6 @@ public class ServerLoggedIn
 		serverLoggedInframe.setBackground(bgColor);
 		serverLoggedInframe.getContentPane().setLayout(null);
 		serverLoggedInframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		serverLoggedInframe.setVisible(true);
 		serverLoggedInframe.setResizable(false);
 	}
 }
