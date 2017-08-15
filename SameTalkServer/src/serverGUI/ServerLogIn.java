@@ -64,6 +64,8 @@ public class ServerLogIn
 	 */
 	public ServerLogIn()
 	{
+		ReadFromPropertiesFile.readyProperties();
+		
 		initializeFrame();
 		initComponents();
 		initListeners();
@@ -110,7 +112,14 @@ public class ServerLogIn
 		userNameTextPane.setFocusable(false);
 		userName = new JTextField();
 		userName.setBounds(187, 155, 154, 20);
-		userName.setText("admin");
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				userName.setText(ReadFromPropertiesFile.getProp("username"));
+			}
+		}).start();
 		userName.setEditable(false);
 		userName.setFocusable(false);
 

@@ -4,21 +4,30 @@ import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import helper.Util;
+import serverGUIOthers.UpdateUserNamePassword;
 import serverMainClasses.Server;
 
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
+import javax.swing.border.TitledBorder;
+
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
@@ -29,16 +38,19 @@ public class ServerLoggedIn
 	private static final int framex = 100;
 	private static final int framey = 100;
 	private static final int frameLength = 700;
-	private static final int frameheigth = 500;
+	private static final int frameheigth = 530;
 	private final Color bgColor = new Color(238, 238, 238);
 	
 	public JFrame serverLoggedInframe;
+	private JMenuBar topBar;
+	private JMenu menuHeaders, subMenu;
+	private JMenuItem menuItems;
 	private JTextPane serverStatusTextPane;
 	private JTextField serverStatusText;
 	private JButton shutDownServerBtn;
 	private JTextArea eventDisplay;
 	private JScrollPane eventDisplayScrollPane;
-	private JButton regUser;
+	private JLabel connectedClientsLabel;
 	private JTable connectedClientsTable;
 	private DefaultTableModel connectedClientsTableModel;
 	private JScrollPane connectedClientsScrollPane;
@@ -87,28 +99,18 @@ public class ServerLoggedIn
 	
 	private void associateFrameComponents()
 	{
+		serverLoggedInframe.setJMenuBar(topBar);
 		serverLoggedInframe.getContentPane().add(serverStatusTextPane);
 		serverLoggedInframe.getContentPane().add(serverStatusText);
 		serverLoggedInframe.getContentPane().add(shutDownServerBtn);
 		serverLoggedInframe.getContentPane().add(eventDisplayScrollPane);
 		serverLoggedInframe.getContentPane().add(serverDetails);
-		serverLoggedInframe.getContentPane().add(regUser);
+		serverLoggedInframe.getContentPane().add(connectedClientsLabel);
 		serverLoggedInframe.getContentPane().add(connectedClientsScrollPane);
 	}
 	
 	private void initListeners()
-	{
-		// Registering new User
-		regUser.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				RegisterUserGUI win = new RegisterUserGUI();
-				win.regFrame.setVisible(true);
-			}
-		});
-		
+	{		
 		// Shutdown Listener.
 		shutDownServerBtn.addActionListener(new ActionListener()
 		{
@@ -145,6 +147,8 @@ public class ServerLoggedIn
 	
 	private void initComponents()
 	{
+		addMenuBar();
+		
 		serverStatusTextPane = new JTextPane();
 		serverStatusTextPane.setEditable(false);
 		serverStatusTextPane.setFocusable(false);
@@ -177,12 +181,19 @@ public class ServerLoggedIn
 		serverDetails.setEditable(false);
 		serverDetails.setBounds(392, 80, 296, 20);
 		
-		regUser = new JButton("Register a New User");
-		regUser.setBounds(440, 120, 200, 30);
-		
+		connectedClientsLabel = new JLabel("Active Employees");
+		connectedClientsLabel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK),
+                null, TitledBorder.CENTER,
+                TitledBorder.TOP));
+		connectedClientsLabel.setFont(new Font("Dialog", Font.BOLD, 16));
+		connectedClientsLabel.setHorizontalAlignment(JLabel.CENTER);
+		connectedClientsLabel.setBounds(394, 120, 294, 22);
 		connectedClientsTable = new JTable();
 		connectedClientsScrollPane = new JScrollPane(connectedClientsTable);
-		connectedClientsScrollPane.setBounds(394, 162, 294, 326);
+		connectedClientsScrollPane.setBounds(394, 142, 294, 346);
+		connectedClientsScrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK),
+                null, TitledBorder.CENTER,
+                TitledBorder.TOP));
 		String[] columns = {"Client Name", "Connection Time"};
 		connectedClientsTableModel = new DefaultTableModel()
 				{
@@ -198,6 +209,123 @@ public class ServerLoggedIn
 		connectedClientsTableModel.setColumnIdentifiers(columns);
 		connectedClientsTable.setModel(connectedClientsTableModel);
 		connectedClientsTable.setRowHeight(30);
+	}
+	
+	private void addMenuBar()
+	{
+		ActionListener menuItemListener = new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				switch (e.getActionCommand())
+				{
+					case "Change User Name":
+						UpdateUserNamePassword windowUn = new UpdateUserNamePassword(UpdateUserNamePassword.UPDATE_USERNAME);
+						windowUn.updateAdminDetailsFrame.setVisible(true);
+						break;
+						
+					case "Change Password":
+						UpdateUserNamePassword windowPass = new UpdateUserNamePassword(UpdateUserNamePassword.UPDATE_PASSWORD);
+						windowPass.updateAdminDetailsFrame.setVisible(true);
+						break;
+						
+					case "Quit":
+						Server.getUtil().updateServerStatus(Util.STATUS_FAILED);
+						server.destroy();
+						serverLoggedInframe.dispose();
+						System.exit(1);
+						break;
+						
+					case "View All":
+						break;
+						
+					case "Edit":
+						break;
+						
+					case "Register":
+						RegisterUserGUI win = new RegisterUserGUI();
+						win.regFrame.setVisible(true);
+						break;
+						
+					case "Delete":
+						break;
+						
+					case "Help":
+						break;
+						
+					case "About":
+						break;
+
+					default:
+						break;
+				}
+			}
+		};
+		
+		topBar = new JMenuBar();
+		
+		// First Menu.
+		menuHeaders = new JMenu("Administrator");
+		menuHeaders.setMnemonic(KeyEvent.VK_A);
+		menuHeaders.getAccessibleContext().setAccessibleDescription("Provide Menus for Administrative services.");
+		menuItems = new JMenuItem("Change User Name");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_U);
+		menuItems.getAccessibleContext().setAccessibleDescription("Change password for Administrative LogIn.");
+		menuHeaders.add(menuItems);
+		menuItems = new JMenuItem("Change Password");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_P);
+		menuItems.getAccessibleContext().setAccessibleDescription("Change password for Administrative LogIn.");
+		menuHeaders.add(menuItems);
+		menuHeaders.addSeparator();
+		menuItems = new JMenuItem("Quit");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_Q);
+		menuItems.getAccessibleContext().setAccessibleDescription("Exit the Server.");
+		menuHeaders.add(menuItems);
+		topBar.add(menuHeaders);
+		
+		// Second Menu.
+		menuHeaders = new JMenu("Employees");
+		menuHeaders.setMnemonic(KeyEvent.VK_E);
+		menuHeaders.getAccessibleContext().setAccessibleDescription("Menu for Employee Management.");
+		subMenu = new JMenu("View/Edit Registered");
+		subMenu.setMnemonic(KeyEvent.VK_V);
+		menuItems = new JMenuItem("View All");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_V);
+		menuItems.getAccessibleContext().setAccessibleDescription("View all Registered Employees");
+		subMenu.add(menuItems);
+		menuItems = new JMenuItem("Edit");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_E);
+		menuItems.getAccessibleContext().setAccessibleDescription("Edit Registered Employees");
+		subMenu.add(menuItems);
+		menuHeaders.add(subMenu);
+		menuHeaders.addSeparator();
+		menuItems = new JMenuItem("Register");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_R);
+		menuHeaders.add(menuItems);
+		menuItems = new JMenuItem("Delete");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_D);
+		menuHeaders.add(menuItems);
+		topBar.add(menuHeaders);
+		
+		menuHeaders = new JMenu("Help");
+		menuItems = new JMenuItem("Help");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_H);
+		menuItems.getAccessibleContext().setAccessibleDescription("Documentation on Software");
+		menuHeaders.add(menuItems);
+		menuItems = new JMenuItem("About");
+		menuItems.addActionListener(menuItemListener);
+		menuItems.setMnemonic(KeyEvent.VK_A);
+		menuHeaders.add(menuItems);
+		topBar.add(menuHeaders);
 	}
 	
 	/**
