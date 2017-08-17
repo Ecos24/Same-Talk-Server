@@ -240,6 +240,7 @@ public class Server
 			if(ct.getClientId() == id)
 			{
 				clientsList.remove(i);
+				util.removeClientFromTable(ct.client.getUserId().toLowerCase());
 				return;
 			}
 		}

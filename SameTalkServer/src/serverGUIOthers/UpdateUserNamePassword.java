@@ -275,7 +275,6 @@ public class UpdateUserNamePassword
 		updateAdminDetailsFrame.setBackground(bgColor);
 		updateAdminDetailsFrame.getContentPane().setLayout(null);
 		updateAdminDetailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		updateAdminDetailsFrame.setVisible(true);
 		updateAdminDetailsFrame.setResizable(false);
 	}
 }

@@ -70,4 +70,18 @@ public class DBUtil
 			return null;
 		}
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<User> getAllUsers()
+	{
+		SessionFactory sessionFactory = CreateDBConnection.getSessionFac();
+		Session session = sessionFactory.openSession();
+		
+		Query query = session.createQuery("from beanClasses.User");
+		List<User> userAll = query.list();
+		
+		session.close();
+		
+		return userAll;
+	}
 }

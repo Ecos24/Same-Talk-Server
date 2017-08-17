@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import helper.Util;
+import hibernate.DBUtil;
+import serverGUIOthers.DeleteEmp;
 import serverGUIOthers.UpdateUserNamePassword;
 import serverMainClasses.Server;
 
@@ -95,6 +97,15 @@ public class ServerLoggedIn
 		initializeFrame();
 		initListeners();
 		associateFrameComponents();
+		
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Util.allUsers.addAll(DBUtil.getAllUsers());
+			}
+		}).start();
 	}
 	
 	private void associateFrameComponents()
@@ -249,6 +260,8 @@ public class ServerLoggedIn
 						break;
 						
 					case "Delete":
+						DeleteEmp deleteWin = new DeleteEmp();
+						deleteWin.deleteFrame.setVisible(true);
 						break;
 						
 					case "Help":
@@ -333,7 +346,7 @@ public class ServerLoggedIn
 	 */
 	private void initializeFrame()
 	{
-		serverLoggedInframe = new JFrame("Same Talk LogIn");
+		serverLoggedInframe = new JFrame("Same Talk Administrator");
 		serverLoggedInframe.setBounds(framex, framey, frameLength, frameheigth);
 		serverLoggedInframe.setBackground(bgColor);
 		serverLoggedInframe.getContentPane().setLayout(null);

@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import beanClasses.User;
+import helper.Util;
 import helper.UtilClient;
 import hibernate.DBUtil;
 import hibernate.RegisterUser;
@@ -118,6 +119,9 @@ public class RegisterUserGUI
 					password.setText("");
 					showHidePass.doClick();
 					JOptionPane.showMessageDialog(regFrame, "User Registered.");
+					
+					Util.allUsers.clear();
+					Util.allUsers.addAll(DBUtil.getAllUsers());
 				}
 				else
 				{

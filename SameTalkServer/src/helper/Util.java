@@ -2,11 +2,14 @@ package helper;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
+import beanClasses.User;
 
 public class Util
 {
@@ -14,6 +17,9 @@ public class Util
 	private DefaultTableModel connectedClientTableModel;
 	private JTextField serverdetails;
 	private JTextField serverStatus;
+	
+	// List of All Users.
+	public static ArrayList<User> allUsers = new ArrayList<>();
 
 	// Status final objects.
 	public final static String STATUS_BUSY = "busy";
@@ -55,6 +61,16 @@ public class Util
 		row[0] = userId;
 		row[1] = sdf.format(new Date());
 		connectedClientTableModel.addRow(row);
+	}
+	
+	public void removeClientFromTable(String userId)
+	{
+		for( int i = 0; i < connectedClientTableModel.getRowCount() ; i++ )
+		{
+			System.out.println(connectedClientTableModel.getValueAt(i, 0).toString());
+			if(connectedClientTableModel.getValueAt(i, 0).toString().equals(userId.toLowerCase()))
+				connectedClientTableModel.removeRow(i);
+		}
 	}
 
 	/**
