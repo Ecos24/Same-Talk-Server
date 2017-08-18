@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import helper.Util;
-import hibernate.DBUtil;
 import serverGUIOthers.DeleteEmp;
 import serverGUIOthers.UpdateUserNamePassword;
 import serverMainClasses.Server;
@@ -97,15 +96,6 @@ public class ServerLoggedIn
 		initializeFrame();
 		initListeners();
 		associateFrameComponents();
-		
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Util.allUsers.addAll(DBUtil.getAllUsers());
-			}
-		}).start();
 	}
 	
 	private void associateFrameComponents()

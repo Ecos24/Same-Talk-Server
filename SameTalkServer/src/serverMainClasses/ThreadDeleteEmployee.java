@@ -24,6 +24,8 @@ public class ThreadDeleteEmployee extends Thread
 	@Override
 	public void run()
 	{
+		updateTable(allUsersSelfCopy, tableModel);
+		
 		while(keepGoing)
 		{
 			if(checkChange(allUsersSelfCopy, Util.allUsers))
@@ -48,6 +50,8 @@ public class ThreadDeleteEmployee extends Thread
 	
 	private void updateTable(ArrayList<User> all, DefaultTableModel model)
 	{
+		model.setRowCount(0);
+		
 		for(User user : all)
 		{
 			Object[] row = new Object[4];
@@ -63,10 +67,17 @@ public class ThreadDeleteEmployee extends Thread
 	private boolean checkChange(ArrayList<User> self, ArrayList<User> main)
 	{
 		Iterator<User> selfIt = self.iterator();
+		
+		if( self.size() != main.size() )
+			return true;
+		
 		for(User user : main)
 		{
-			if( user.getUserId().toLowerCase().equals(selfIt.next().getUserId().toLowerCase()) )
-				return true;
+			if( selfIt.hasNext() )
+			{
+				if( !user.getUserId().toLowerCase().equals(selfIt.next().getUserId().toLowerCase()) )
+					return true;
+			}
 		}
 		return false;
 	}

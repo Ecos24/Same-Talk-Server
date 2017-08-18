@@ -110,7 +110,7 @@ public class RegisterUserGUI
 						return;
 					}
 					
-					Server.clientStatusList = DBUtil.getAllRegisteredClients();
+					Server.clientStatusList = DBUtil.getAllRegisteredClients(false);
 					
 					userId.setText("");
 					userName.setText("");
@@ -121,7 +121,7 @@ public class RegisterUserGUI
 					JOptionPane.showMessageDialog(regFrame, "User Registered.");
 					
 					Util.allUsers.clear();
-					Util.allUsers.addAll(DBUtil.getAllUsers());
+					DBUtil.getAllRegisteredClients(true);
 				}
 				else
 				{

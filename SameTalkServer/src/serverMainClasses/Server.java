@@ -70,7 +70,7 @@ public class Server
 			public void run()
 			{
 				AuthenticateUser.initHibernate(util);
-				clientStatusList = DBUtil.getAllRegisteredClients();
+				clientStatusList = DBUtil.getAllRegisteredClients(false);
 			}
 		}).start();
 	}
