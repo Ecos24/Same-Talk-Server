@@ -5,12 +5,15 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.swing.table.DefaultTableModel;
+
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import beanClasses.ClientStatus;
 import beanClasses.User;
 import helper.Util;
+import serverMainClasses.ThreadDeleteEmployee;
 
 public class DBUtil
 {	
@@ -74,30 +77,62 @@ public class DBUtil
 			return null;
 	}
 	
-	public static boolean removeUsers(ArrayList<String> all)
+	public static boolean removeUsers(ArrayList<String> all, DefaultTableModel tableModel)
 	{
-		boolean falg = false;
+		boolean deletedFalg = false;
 		
 		System.out.println("Inside function removeUsers");
-		
-		Iterator<String> idIt = all.iterator();
+		Session session = CreateDBConnection.getSession();
+		session.beginTransaction();
 		
 		for(User user : Util.allUsers)
 		{
+			Iterator<String> idIt = all.iterator();
+			
 			System.out.println("Checking "+user.getUserId());
-			if( idIt.hasNext() )
+			while( idIt.hasNext() )
 			{
 				System.out.println("idIt contains user");
 				String id = idIt.next();
 				if( user.getUserId().toLowerCase().equals(id.toLowerCase()) )
 				{
-					Util.allUsers.remove(user);
+					session.delete(user);
 					System.out.println("Removed "+user.getUserId());
-					falg = true;
+					deletedFalg = true;
+					ThreadDeleteEmployee.keepGoing = false;
+					break;
 				}
 			}
 		}
 		
-		return falg;
+		session.getTransaction().commit();
+		session.close();
+		
+		if( deletedFalg == true )
+		{
+			Util.allUsers.clear();
+			DBUtil.getAllRegisteredClients(true);
+			ThreadDeleteEmployee tDele = new ThreadDeleteEmployee(tableModel, false);
+			tDele.start();
+		}
+		
+		return deletedFalg;
+	}
+
+	public static User getUser(String id)
+	{
+		Session session = CreateDBConnection.getSession();
+		User reUser = (User)session.get(User.class, id);
+		session.close();
+		return reUser;
+	}
+
+	public static void updateUser(User updatedUser)
+	{
+		Session session = CreateDBConnection.getSession();
+		session.beginTransaction();
+		session.update(updatedUser);
+		session.getTransaction().commit();
+		session.close();
 	}
 }

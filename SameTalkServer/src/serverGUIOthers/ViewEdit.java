@@ -2,14 +2,12 @@ package serverGUIOthers;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
-import javax.swing.JButton;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -17,78 +15,64 @@ import javax.swing.table.DefaultTableModel;
 import hibernate.DBUtil;
 import serverMainClasses.ThreadDeleteEmployee;
 
-public class DeleteEmp
+public class ViewEdit
 {
 	private static final int framex = 100;
 	private static final int framey = 100;
 	private static final int frameLength = 500;
-	private static final int frameheigth = 370;
+	private static final int frameheigth = 320;
 	private Color bgColor = new Color(238, 238, 238);
 	
 	private ThreadDeleteEmployee tDele;
 	
-	public JFrame deleteFrame;
+	public JFrame viewEditFrame;
+	
+	private Action editAction;
 	
 	private JScrollPane tableScrollPane;
 	private JTable empTable;
 	private DefaultTableModel tableModel;
-	private JButton deleteBtn;
 
 	/**
 	 * Create the application.
 	 */
-	public DeleteEmp()
+	public ViewEdit()
 	{
 		initComponents();
 		initListeners();
 		
-		tDele = new ThreadDeleteEmployee(tableModel, false);
+		@SuppressWarnings("unused")
+		EditButtonColumn edit = new EditButtonColumn(empTable, editAction, 3);
+		
+		tDele = new ThreadDeleteEmployee(tableModel, true);
 		tDele.start();
 		
 		initializeFrame();
 		associateFrameComponents();
 	}
-
+	
 	private void associateFrameComponents()
 	{
-		deleteFrame.getContentPane().add(tableScrollPane);
-		deleteFrame.getContentPane().add(deleteBtn);
-		
-		deleteFrame.getRootPane().setDefaultButton(deleteBtn);
+		viewEditFrame.getContentPane().add(tableScrollPane);
 	}
 	
 	private void initListeners()
 	{
-		deleteBtn.addActionListener(new ActionListener()
+		editAction = new AbstractAction()
 		{
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				ArrayList<String> checkedId = new ArrayList<>();
+				EditingWindow win = new EditingWindow(DBUtil.getUser(e.getActionCommand()));
+				win.editingFrame.setVisible(true);
 				
-				for( int i = 0 ; i < empTable.getRowCount() ; i++ )
-				{
-					Boolean checked = Boolean.valueOf(empTable.getValueAt(i, 0).toString());
-					String id = empTable.getValueAt(i, 1).toString();
-					
-					if( checked )
-						checkedId.add(id);
-				}
-				
-				if( checkedId.size() > 0 )
-				{
-					if( DBUtil.removeUsers(checkedId, tableModel) )
-						JOptionPane.showMessageDialog(deleteFrame, "Selected employees deleted.");
-					else
-						JOptionPane.showMessageDialog(deleteFrame, "Selected not deleted.");
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(deleteFrame, "Select Employee to delete.");
-					return;
-				}
+				/*JTable table = (JTable)e.getSource();
+		        int modelRow = Integer.valueOf( e.getActionCommand() );
+		        ((DefaultTableModel)table.getModel()).removeRow(modelRow);*/
 			}
-		});
+		};
 	}
 	
 	private void initComponents()
@@ -104,7 +88,7 @@ public class DeleteEmp
 			@Override
 			public boolean isCellEditable(int rowIndex, int columnIndex)
 			{
-				return columnIndex == 0;
+				return columnIndex == 3;
 			}
 			
 			@Override
@@ -113,13 +97,16 @@ public class DeleteEmp
 				switch(column)
 				{
 					case 0:
-						return Boolean.class;
+						return String.class;
 						
 					case 1:
 						return String.class;
 						
 					case 2:
 						return String.class;
+						
+					case 3:
+						return EditButtonColumn.class;
 						
 					default:
 						return String.class;
@@ -129,16 +116,13 @@ public class DeleteEmp
 		empTable.setModel(tableModel);
 		
 		// Set Column Names.
-		tableModel.addColumn("Select");
 		tableModel.addColumn("Employee Id");
 		tableModel.addColumn("Employee Name");
 		tableModel.addColumn("Department");
+		tableModel.addColumn("Edit Employee");
 		
 		// Add Table to ScrollPane
 		tableScrollPane.setViewportView(empTable);
-		
-		deleteBtn = new JButton("Delete");
-		deleteBtn.setBounds(((frameLength/2) - 50), 320, 100, 30);
 	}
 
 	/**
@@ -146,14 +130,14 @@ public class DeleteEmp
 	 */
 	private void initializeFrame()
 	{
-		deleteFrame = new JFrame("Delete Employee");
-		deleteFrame.setBounds(framex, framey, frameLength, frameheigth);
-		deleteFrame.setBackground(bgColor);
-		deleteFrame.getContentPane().setLayout(null);
-		deleteFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		deleteFrame.setResizable(false);
+		viewEditFrame = new JFrame("View/Edit Employee");
+		viewEditFrame.setBounds(framex, framey, frameLength, frameheigth);
+		viewEditFrame.setBackground(bgColor);
+		viewEditFrame.getContentPane().setLayout(null);
+		viewEditFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		viewEditFrame.setResizable(false);
 		
-		deleteFrame.addWindowListener(new WindowAdapter()
+		viewEditFrame.addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)

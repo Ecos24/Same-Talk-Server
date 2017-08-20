@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import helper.Util;
 import serverGUIOthers.DeleteEmp;
 import serverGUIOthers.UpdateUserNamePassword;
+import serverGUIOthers.ViewEdit;
 import serverMainClasses.Server;
 
 import javax.swing.JTable;
@@ -44,7 +45,7 @@ public class ServerLoggedIn
 	
 	public JFrame serverLoggedInframe;
 	private JMenuBar topBar;
-	private JMenu menuHeaders, subMenu;
+	private JMenu menuHeaders;
 	private JMenuItem menuItems;
 	private JTextPane serverStatusTextPane;
 	private JTextField serverStatusText;
@@ -238,10 +239,9 @@ public class ServerLoggedIn
 						System.exit(1);
 						break;
 						
-					case "View All":
-						break;
-						
-					case "Edit":
+					case "View/Edit Registered":
+						ViewEdit editWindow = new ViewEdit();
+						editWindow.viewEditFrame.setVisible(true);
 						break;
 						
 					case "Register":
@@ -294,19 +294,10 @@ public class ServerLoggedIn
 		menuHeaders = new JMenu("Employees");
 		menuHeaders.setMnemonic(KeyEvent.VK_E);
 		menuHeaders.getAccessibleContext().setAccessibleDescription("Menu for Employee Management.");
-		subMenu = new JMenu("View/Edit Registered");
-		subMenu.setMnemonic(KeyEvent.VK_V);
-		menuItems = new JMenuItem("View All");
+		menuItems = new JMenuItem("View/Edit Registered");
 		menuItems.addActionListener(menuItemListener);
 		menuItems.setMnemonic(KeyEvent.VK_V);
-		menuItems.getAccessibleContext().setAccessibleDescription("View all Registered Employees");
-		subMenu.add(menuItems);
-		menuItems = new JMenuItem("Edit");
-		menuItems.addActionListener(menuItemListener);
-		menuItems.setMnemonic(KeyEvent.VK_E);
-		menuItems.getAccessibleContext().setAccessibleDescription("Edit Registered Employees");
-		subMenu.add(menuItems);
-		menuHeaders.add(subMenu);
+		menuHeaders.add(menuItems);
 		menuHeaders.addSeparator();
 		menuItems = new JMenuItem("Register");
 		menuItems.addActionListener(menuItemListener);
