@@ -83,6 +83,17 @@ public class UtilClient
 		return dept;
 	}
 	
+	public static int getDepartmentIndex(String dept)
+	{
+		String[] deptArr = {"Select Department", "Accounting", "Developer", "Finance", "Human Resource", "Quality Assurance"};
+		for( int i=1 ; i<deptArr.length ; i++ )
+		{
+			if( dept.equalsIgnoreCase(deptArr[i]) )
+				return i;
+		}
+		return -1;
+	}
+	
 	public static String[] getPositions( String dept )
 	{
 		ArrayList<String> pos = new ArrayList<>();
@@ -142,5 +153,66 @@ public class UtilClient
 		}
 		else
 			return null;
+	}
+
+	public static int getPositionsIndex(String dept, String position)
+	{
+		switch(WordUtil.capitalizeString(dept))
+		{
+			case "Accounting":
+				String[] posAc = {"Staff Accountant", "Accounts Receivable Specialist",
+						"Analyst/Associate (Forensic Accounting)", "Accounting Associate",
+						"Tax Manager", "Internal Audit Manager"};
+				for( int i=0 ; i<posAc.length ; i++ )
+				{
+					if( position.equalsIgnoreCase(posAc[i]) )
+						return i;
+				}
+				return -1;
+				
+			case "Developer":
+				String[] posDe = {"Project Manager", "Team Lead",
+						"Senior Developer", "Junior Developer",
+						"Designer", "DB Manager"};
+				for( int i=0 ; i<posDe.length ; i++ )
+				{
+					if( position.equalsIgnoreCase(posDe[i]) )
+						return i;
+				}
+				return -1;
+				
+			case "Finance":
+				String[] posFi = {"Financial Analyst", "Credit Manager",
+						"Cash Management", "Investor Relations"};
+				for( int i=0 ; i<posFi.length ; i++ )
+				{
+					if( position.equalsIgnoreCase(posFi[i]) )
+						return i;
+				}
+				return -1;
+				
+			case "Human Resource":
+				String[] posHr = {"Manager", "Talent Manager",
+						"Assistant Manager"};
+				for( int i=0 ; i<posHr.length ; i++ )
+				{
+					if( position.equalsIgnoreCase(posHr[i]) )
+						return i;
+				}
+				return -1;
+				
+			case "Quality Assurance":
+				String[] posQa = {"Team Leader", "Senior Testor",
+						"Junior Testor"};
+				for( int i=1 ; i<posQa.length ; i++ )
+				{
+					if( position.equalsIgnoreCase(posQa[i]) )
+						return i;
+				}
+				return -1;
+
+			default:
+				return -1;
+		}
 	}
 }

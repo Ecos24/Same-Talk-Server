@@ -1,7 +1,6 @@
 package serverGUIOthers;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -41,22 +40,6 @@ public class EditingWindow
 	private JButton update;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EditingWindow window = new EditingWindow(null);
-					window.editingFrame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the application.
 	 */
 	public EditingWindow(User editUser)
@@ -65,6 +48,24 @@ public class EditingWindow
 		initListeners(editUser);
 		initializeFrame(editUser.getUserName());
 		associateFrameComponents();
+		userDept.setSelectedIndex(UtilClient.getDepartmentIndex(editUser.getDepartment()));
+		new Thread( new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					wait(500);
+				}
+				catch(InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				userPos.setSelectedIndex(UtilClient.getPositionsIndex(editUser.getDepartment(),editUser.getPosition()));
+			}
+		}).start();
 	}
 	
 	private void associateFrameComponents()
@@ -123,6 +124,7 @@ public class EditingWindow
 			{
 				if( userDept.getSelectedIndex() != 0 )
 				{
+					System.out.println((String)userDept.getSelectedItem());
 					userPos.setModel( new DefaultComboBoxModel<String>( 
 							UtilClient.getPositions((String)userDept.getSelectedItem()) ));
 				}
@@ -156,14 +158,12 @@ public class EditingWindow
 		userDeptLabel.setBounds(70, 130, 180, 20);
 		userDeptLabel.setLabelFor(userDept);
 		userDept = new JComboBox<>(UtilClient.getDepartments());
-		userDept.setSelectedItem(editUser.getDepartment());
 		userDept.setBounds(270, 130, 160, 20);
 		
 		userPosLabel = new JLabel("Employee Position :-");
 		userPosLabel.setBounds(70, 160, 180, 20);
 		userPosLabel.setLabelFor(userPos);
 		userPos = new JComboBox<>(defaultPos);
-		userPos.setSelectedItem(editUser.getPosition());
 		userPos.setBounds(270, 160, 160, 20);
 		
 		update = new JButton("Update Employee");
