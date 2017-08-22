@@ -89,7 +89,7 @@ public class ThreadDeleteEmployee extends Thread
 			{
 				if( selfIt.hasNext() )
 				{
-					if( !user.getUserId().toLowerCase().equals(selfIt.next().getUserId().toLowerCase()) )
+					if( !user.getUserId().equalsIgnoreCase(selfIt.next().getUserId()) )
 						return true;
 				}
 			}

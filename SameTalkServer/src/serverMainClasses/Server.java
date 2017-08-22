@@ -140,8 +140,8 @@ public class Server
 		{
 			ServersClientThread ct = clientsList.get(i);
 			// try to write to the Client if it fails remove it from the list
-			if( chat.getMsgTarget().toLowerCase().equals(ct.client.getUserId().toLowerCase())||
-					sender.equals(ct.client.getUserId().toLowerCase()) )
+			if( chat.getMsgTarget().equalsIgnoreCase(ct.client.getUserId())||
+					sender.equalsIgnoreCase(ct.client.getUserId()) )
 			{
 				if(!ct.writeMsg(messageLf, chat))
 				{
@@ -179,9 +179,9 @@ public class Server
 		{
 			ServersClientThread ct = clientsList.get(i);
 			// try to write to the Client if it fails remove it from the list
-			if( chat.getMsgTarget().toLowerCase().equals(ct.client.getDepartment()) ||
-					chat.getMsgTarget().toLowerCase().equals(ct.client.getPosition()) ||
-					sender.equals(ct.client.getUserId().toLowerCase()) )
+			if( chat.getMsgTarget().equalsIgnoreCase(ct.client.getDepartment()) ||
+					chat.getMsgTarget().equalsIgnoreCase(ct.client.getPosition()) ||
+					sender.equalsIgnoreCase(ct.client.getUserId()) )
 			{
 				if(!ct.writeMsg(messageLf, chat))
 				{

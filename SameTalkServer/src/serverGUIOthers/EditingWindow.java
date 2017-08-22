@@ -56,7 +56,7 @@ public class EditingWindow
 			{
 				try
 				{
-					wait(500);
+					Thread.sleep(200);
 				}
 				catch(InterruptedException e)
 				{
@@ -95,13 +95,20 @@ public class EditingWindow
 					updatedUser.setDepartment((String)userDept.getSelectedItem());
 					updatedUser.setPosition((String)userPos.getSelectedItem());
 					updatedUser.setUserName(WordUtil.capitalizeString(userName.getText()));
-					if( !editUser.getUserName().toLowerCase().equals(updatedUser.getUserName().toLowerCase())
-							|| !editUser.getDepartment().toLowerCase().equals(updatedUser.getDepartment().toLowerCase())
-							|| !editUser.getPosition().toLowerCase().equals(updatedUser.getPosition().toLowerCase()) )
+					if( !editUser.getUserName().equalsIgnoreCase(updatedUser.getUserName())
+							|| !editUser.getDepartment().equalsIgnoreCase(updatedUser.getDepartment())
+							|| !editUser.getPosition().equalsIgnoreCase(updatedUser.getPosition()) )
 					{
-						updatedUser.setUserId(editUser.getUserId());
-						updatedUser.setPassword(editUser.getPassword());
-						DBUtil.updateUser(updatedUser);
+						int ans = JOptionPane.showConfirmDialog(editingFrame, "Do you confirm the changes\n"
+								+ editUser.getUserName() + " --> " + updatedUser.getUserName() + "\n"
+								+ editUser.getPosition() + " --> " + updatedUser.getPosition() + "\n"
+								+ editUser.getDepartment() + " --> " + updatedUser.getDepartment() + "\n" );
+						if( ans == 2 )
+						{
+							updatedUser.setUserId(editUser.getUserId());
+							updatedUser.setPassword(editUser.getPassword());
+							DBUtil.updateUser(updatedUser);
+						}
 					}
 					else
 					{
@@ -124,7 +131,6 @@ public class EditingWindow
 			{
 				if( userDept.getSelectedIndex() != 0 )
 				{
-					System.out.println((String)userDept.getSelectedItem());
 					userPos.setModel( new DefaultComboBoxModel<String>( 
 							UtilClient.getPositions((String)userDept.getSelectedItem()) ));
 				}

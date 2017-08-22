@@ -93,10 +93,10 @@ public class RegisterUserGUI
 								String.valueOf(password.getPassword()).equals(""))
 				{
 					User newUser = new User();
-					newUser.setUserId(userId.getText().toLowerCase());
+					newUser.setUserId(userId.getText());
 					newUser.setUserName(userName.getText());
-					newUser.setDepartment( ((String)userDept.getSelectedItem()).toLowerCase() );
-					newUser.setPosition( ((String)userPos.getSelectedItem()).toLowerCase() );
+					newUser.setDepartment( (String)userDept.getSelectedItem() );
+					newUser.setPosition( (String)userPos.getSelectedItem() );
 					newUser.setPassword(String.valueOf(password.getPassword()));
 					
 					try

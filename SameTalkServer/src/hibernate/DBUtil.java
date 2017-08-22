@@ -94,7 +94,7 @@ public class DBUtil
 			{
 				System.out.println("idIt contains user");
 				String id = idIt.next();
-				if( user.getUserId().toLowerCase().equals(id.toLowerCase()) )
+				if( user.getUserId().equalsIgnoreCase(id) )
 				{
 					session.delete(user);
 					System.out.println("Removed "+user.getUserId());

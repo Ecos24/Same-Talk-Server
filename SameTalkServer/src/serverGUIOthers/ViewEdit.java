@@ -67,10 +67,6 @@ public class ViewEdit
 			{
 				EditingWindow win = new EditingWindow(DBUtil.getUser(e.getActionCommand()));
 				win.editingFrame.setVisible(true);
-				
-				/*JTable table = (JTable)e.getSource();
-		        int modelRow = Integer.valueOf( e.getActionCommand() );
-		        ((DefaultTableModel)table.getModel()).removeRow(modelRow);*/
 			}
 		};
 	}

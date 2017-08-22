@@ -166,7 +166,9 @@ public class UtilClient
 				for( int i=0 ; i<posAc.length ; i++ )
 				{
 					if( position.equalsIgnoreCase(posAc[i]) )
-						return i;
+					{
+						return (i+1);
+					}
 				}
 				return -1;
 				
@@ -177,7 +179,9 @@ public class UtilClient
 				for( int i=0 ; i<posDe.length ; i++ )
 				{
 					if( position.equalsIgnoreCase(posDe[i]) )
-						return i;
+					{
+						return (i+1);
+					}
 				}
 				return -1;
 				
@@ -187,7 +191,9 @@ public class UtilClient
 				for( int i=0 ; i<posFi.length ; i++ )
 				{
 					if( position.equalsIgnoreCase(posFi[i]) )
-						return i;
+					{
+						return (i+1);
+					}
 				}
 				return -1;
 				
@@ -197,7 +203,9 @@ public class UtilClient
 				for( int i=0 ; i<posHr.length ; i++ )
 				{
 					if( position.equalsIgnoreCase(posHr[i]) )
-						return i;
+					{
+						return (i+1);
+					}
 				}
 				return -1;
 				
@@ -207,7 +215,9 @@ public class UtilClient
 				for( int i=1 ; i<posQa.length ; i++ )
 				{
 					if( position.equalsIgnoreCase(posQa[i]) )
-						return i;
+					{
+						return (i+1);
+					}
 				}
 				return -1;
 

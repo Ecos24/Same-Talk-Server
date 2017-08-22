@@ -230,12 +230,12 @@ public class ServersClientThread extends Thread
 
 					case ChatMessage.MESSAGE_TARGET_GROUP:
 						Server.groupMsg(client.getUserId() + " : " + msg, chatMessage,
-								client.getUserId().toLowerCase(), clientId);
+								client.getUserId(), clientId);
 						break;
 
 					case ChatMessage.MESSAGE_TARGET_PERSONAL:
 						Server.personalMsg(client.getUserId() + " : " + msg, chatMessage,
-								client.getUserId().toLowerCase(), clientId);
+								client.getUserId(), clientId);
 						break;
 
 					default:
