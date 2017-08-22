@@ -103,11 +103,13 @@ public class EditingWindow
 								+ editUser.getUserName() + " --> " + updatedUser.getUserName() + "\n"
 								+ editUser.getPosition() + " --> " + updatedUser.getPosition() + "\n"
 								+ editUser.getDepartment() + " --> " + updatedUser.getDepartment() + "\n" );
-						if( ans == 2 )
+						System.out.println(ans);
+						if( ans == 0 )
 						{
 							updatedUser.setUserId(editUser.getUserId());
 							updatedUser.setPassword(editUser.getPassword());
 							DBUtil.updateUser(updatedUser);
+							JOptionPane.showMessageDialog(editingFrame, "Changes updated");
 						}
 					}
 					else

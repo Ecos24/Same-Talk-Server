@@ -133,6 +133,7 @@ public class DBUtil
 		session.beginTransaction();
 		session.update(updatedUser);
 		session.getTransaction().commit();
+		System.out.println("Commited changes");
 		session.close();
 	}
 }
