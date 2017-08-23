@@ -1,6 +1,10 @@
 package helper;
 
-public class WordUtil
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DateWordFormatter
 {
 	public static String capitalizeString(String string)
 	{
@@ -20,5 +24,11 @@ public class WordUtil
 			}
 		}
 		return String.valueOf(chars);
+	}
+	
+	public static String getCurrentDate()
+	{
+		DateFormat dateFormatter = new SimpleDateFormat("ddMMYYYY");
+		return dateFormatter.format(new Date());
 	}
 }

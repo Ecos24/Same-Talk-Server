@@ -157,7 +157,7 @@ public class UtilClient
 
 	public static int getPositionsIndex(String dept, String position)
 	{
-		switch(WordUtil.capitalizeString(dept))
+		switch(DateWordFormatter.capitalizeString(dept))
 		{
 			case "Accounting":
 				String[] posAc = {"Staff Accountant", "Accounts Receivable Specialist",

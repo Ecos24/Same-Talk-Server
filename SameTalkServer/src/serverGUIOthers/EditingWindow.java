@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 import beanClasses.User;
 import helper.UtilClient;
-import helper.WordUtil;
+import helper.DateWordFormatter;
 import hibernate.DBUtil;
 
 public class EditingWindow
@@ -94,7 +94,7 @@ public class EditingWindow
 					User updatedUser = new User();
 					updatedUser.setDepartment((String)userDept.getSelectedItem());
 					updatedUser.setPosition((String)userPos.getSelectedItem());
-					updatedUser.setUserName(WordUtil.capitalizeString(userName.getText()));
+					updatedUser.setUserName(DateWordFormatter.capitalizeString(userName.getText()));
 					if( !editUser.getUserName().equalsIgnoreCase(updatedUser.getUserName())
 							|| !editUser.getDepartment().equalsIgnoreCase(updatedUser.getDepartment())
 							|| !editUser.getPosition().equalsIgnoreCase(updatedUser.getPosition()) )

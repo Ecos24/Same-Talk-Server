@@ -10,9 +10,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import beanClasses.ChatMessage;
 import beanClasses.ClientStatus;
 import beanClasses.User;
-import helper.ChatMessage;
 import helper.Util;
 import helper.UtilClient;
 import hibernate.AuthenticateUser;

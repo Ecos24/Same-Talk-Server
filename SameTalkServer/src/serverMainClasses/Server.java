@@ -11,8 +11,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import beanClasses.ChatMessage;
 import beanClasses.ClientStatus;
-import helper.ChatMessage;
 import helper.Util;
 import helper.UtilClient;
 import hibernate.AuthenticateUser;
