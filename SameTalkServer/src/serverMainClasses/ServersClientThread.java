@@ -155,7 +155,7 @@ public class ServersClientThread extends Thread
 		}
 		// Initialize object for Status Notifier.
 		ThreadServersClientStatusNotifier thNotifier = new ThreadServersClientStatusNotifier(clientOutputStream,
-				this.client, currentClientStatusList, utilClient);
+				this.client, currentClientStatusList, utilClient, clientSocket);
 		thNotifier.start();
 		
 		

@@ -2,6 +2,7 @@ package serverMainClasses;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -19,6 +20,7 @@ public class ServersClientStatusNotifier
 	private LinkedHashMap<String, LinkedHashMap<String,ArrayList<ClientStatus>>> currentClientStatusList;
 	private String userId;
 	private UtilClient utilClient;
+	private Socket clientsSocket;
 	
 	/**
 	 * Constructor to initiate outputStream & currentClientStatusList
@@ -29,7 +31,7 @@ public class ServersClientStatusNotifier
 	 */
 	public ServersClientStatusNotifier(ObjectOutputStream clientOutputStream, 
 			LinkedHashMap<String, LinkedHashMap<String,ArrayList<ClientStatus>>> currentClientStatusList,
-			String clientId, UtilClient utilClient)
+			String clientId, UtilClient utilClient, Socket mainsocket)
 	{
 		super();
 		// This line creating problem But Why??????????????????????????????????????
@@ -37,6 +39,7 @@ public class ServersClientStatusNotifier
 		this.currentClientStatusList = currentClientStatusList;
 		this.userId = clientId;
 		this.utilClient = utilClient;
+		this.clientsSocket = mainsocket;
 		
 		// Write currentClientStatus List to user When requested.
 		try
@@ -56,7 +59,7 @@ public class ServersClientStatusNotifier
 	 */
 	public void notifyClientAboutStatus()
 	{
-		if( clientsStatusChange() )
+		if( clientsStatusChange() && clientsSocket.isConnected() )
 		{
 			try
 			{
