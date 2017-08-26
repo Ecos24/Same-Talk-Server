@@ -65,8 +65,13 @@ public class ServersClientStatusNotifier
 			{
 				System.out.println("Writing updated client status list to --> "+userId);
 				this.currentClientStatusList = utilClient.copyLinkedHashMap(Server.clientStatusList);
-				clientOutputStream.writeObject(this.currentClientStatusList);
-				clientOutputStream.flush();
+				if( clientsSocket.isConnected() )
+				{
+					clientOutputStream.writeObject(this.currentClientStatusList);
+					clientOutputStream.flush();
+				}
+				else
+					return;
 			}
 			catch(IOException e)
 			{

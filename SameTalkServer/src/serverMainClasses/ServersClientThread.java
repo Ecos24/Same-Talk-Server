@@ -216,26 +216,21 @@ public class ServersClientThread extends Thread
 	 */
 	private void instanceOfChatMessage(ChatMessage chatMessage)
 	{
-		// Message
-		String msg = chatMessage.getMessage();
-
 		switch(chatMessage.getType())
 		{
 			case ChatMessage.MESSAGE:
 				switch(chatMessage.getMsgTargetType())
 				{
 					case ChatMessage.MESSAGE_TARGET_BROADCAST:
-						Server.broadCast(client.getUserId() + " : " + msg, chatMessage, clientId);
+						Server.broadCast(chatMessage, clientId);
 						break;
 
 					case ChatMessage.MESSAGE_TARGET_GROUP:
-						Server.groupMsg(client.getUserId() + " : " + msg, chatMessage,
-								client.getUserId(), clientId);
+						Server.groupMsg(chatMessage);
 						break;
 
 					case ChatMessage.MESSAGE_TARGET_PERSONAL:
-						Server.personalMsg(client.getUserId() + " : " + msg, chatMessage,
-								client.getUserId(), clientId);
+						Server.personalMsg(chatMessage);
 						break;
 
 					default:
@@ -246,16 +241,6 @@ public class ServersClientThread extends Thread
 			case ChatMessage.LOGOUT:
 				util.displayEvent(client.getUserId() + " disconnected with a LOGOUT message.");
 				keepGoing = false;
-				break;
-
-			case ChatMessage.WHOSETHERE:
-				writeMsg("List of the users connected at " + Util.sdf.format(new Date()) + "\n", chatMessage);
-				// Scan ArrayList for users connected
-				for(int i = 0; i < Server.clientsList.size(); ++i)
-				{
-					ServersClientThread ct = Server.clientsList.get(i);
-					writeMsg((i + 1) + ") " + ct.client.getUserId() + " since " + ct.date, chatMessage);
-				}
 				break;
 
 			default:
@@ -304,7 +289,7 @@ public class ServersClientThread extends Thread
 	/**
 	 * Write a String to the Client output stream
 	 */
-	public boolean writeMsg(String msg, ChatMessage chat)
+	public boolean writeMsg(ChatMessage chat)
 	{
 		// If Client is still connected send the message to it
 		if( !clientSocket.isConnected() )
@@ -315,7 +300,6 @@ public class ServersClientThread extends Thread
 		// write the message to the stream
 		try
 		{
-			chat.setMessage(msg);
 			clientOutputStream.writeObject(chat);
 			clientOutputStream.flush();
 		}

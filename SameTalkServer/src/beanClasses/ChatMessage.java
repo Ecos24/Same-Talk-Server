@@ -21,21 +21,25 @@ public class ChatMessage implements Serializable
 	// WHOISIN to receive the list of the users connected
 	// MESSAGE an ordinary message
 	// LOGOUT to disconnect from the Server
-	public static final int WHOSETHERE = 0, MESSAGE = 1, LOGOUT = 2;
+	public static final int MESSAGE = 1, LOGOUT = 2;
 	public static final String MESSAGE_TARGET_PERSONAL = "personal", 
 			MESSAGE_TARGET_BROADCAST = "broadcast", MESSAGE_TARGET_GROUP = "group"; 
 	private int type;
-	private String sendersUsername, message, msgTarget, msgTargetType;
+	private String sendersUsername, sendersId;
+	private String message, msgTarget, msgTargetType;
+	private String receivedTime, sentTime;
 	private File file;
 	private boolean fileCheck;
 
 	// Constructor
-	public ChatMessage(String sendersUsername, int type, String message)
+	public ChatMessage(String sendersUsername, String sendersId, int type, String message, String sentTime)
 	{
 		super();
 		this.type = type;
 		this.message = message;
 		this.sendersUsername = sendersUsername;
+		this.sendersId = sendersId;
+		this.sentTime = sentTime;
 	}
 
 	// Getters
@@ -46,6 +50,10 @@ public class ChatMessage implements Serializable
 	public String getSendersUsername()
 	{
 		return sendersUsername;
+	}
+	public String getSendersId()
+	{
+		return sendersId;
 	}
 	public String getMessage()
 	{
@@ -67,11 +75,23 @@ public class ChatMessage implements Serializable
 	{
 		return fileCheck;
 	}
+	public String getReceivedTime()
+	{
+		return receivedTime;
+	}
+	public String getSentTime()
+	{
+		return sentTime;
+	}
 
 	// Setters
 	public void setFileCheck(boolean fileCheck)
 	{
 		this.fileCheck = fileCheck;
+	}
+	public void setReceivedTime(String receivedTime)
+	{
+		this.receivedTime = receivedTime;
 	}
 	public void setMessage(String message)
 	{

@@ -9,6 +9,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import beanClasses.ChatMessage;
 import beanClasses.User;
 
 public class Util
@@ -80,7 +81,7 @@ public class Util
 	public void displayEvent(String msg)
 	{
 		String time = sdf.format(new Date()) + " " + msg + "\n";
-		displayEvent.append(time);
+		displayEvent.append(time+"\n");
 	}
 	
 	/**
@@ -88,21 +89,8 @@ public class Util
 	 * @param msg
 	 */
 	public void displayChat(String msg)
-	{
-		String time = sdf.format(new Date()) + " " + msg;
-		
-		/*StyleContext sc = StyleContext.getDefaultStyleContext();
-	    AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.GREEN);
-	    aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-	    aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-	    int len = displayEvent.getDocument().getLength();
-	    displayEvent.setCaretPosition(len);
-	    displayEvent.setCharacterAttributes(aset, false);
-	    System.out.println(time);
-	    displayEvent.replaceSelection(time);*/
-		
-		displayEvent.append(time);
+	{		
+		displayEvent.append(msg+"\n");
 	}
 	
 	/**
@@ -142,5 +130,10 @@ public class Util
 				serverStatus.setText(errorStatus);
 				break;
 		}
+	}
+	
+	public static String getFullLengthChatToDisplay(ChatMessage chat)
+	{
+		return chat.getSentTime() + "   " + chat.getSendersId() + " : " + chat.getMessage();
 	}
 }
